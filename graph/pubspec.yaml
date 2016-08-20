@@ -1,0 +1,7 @@
+name: teamx_platform
+version: 1.0.0
+author: Danny Hendrix
+description: TeamX webgame
+homepage: http://www.dannyhendrix.com/teamx
+dependencies:
+  browser: any

@@ -29,19 +29,27 @@ class GraphVisualizer
 
   GraphVisualizer(Map input)
   {
-    canvas = new CanvasElement(width:200, height: 300);
+    final int paddingW = 50;
+    final int paddingH = 50;
+    final int radius = 10;
+
+    final int cols = Math.min(6,input["nodes"].length);
+    final int rows = (input["nodes"].length/cols).ceil().toInt();
+
+    canvas = new CanvasElement(width:paddingW*cols+paddingW, height: (10+paddingH)*rows+paddingH);
     ctx = canvas.getContext("2d");
-    int x = 40;
-    int y = 40;
+
+    int x = paddingW;
+    int y = paddingH;
     Map<int,VisualizationNode> nodes = {};
     input["nodes"].forEach((int k, String v) {
-      drawNode(x, y, v);
+      drawNode(x, y, v, radius);
       nodes[k] = new VisualizationNode(v,x,y);
-      x+= 45;
-      if((k+1)%4 == 0)
+      x+= paddingW;
+      if((k+1)%cols == 0)
       {
-        y += 55;
-        x = 40;
+        y += paddingH+10;
+        x = paddingW;
       }
     });
 
@@ -52,28 +60,47 @@ class GraphVisualizer
 
   void drawEdge(VisualizationNode from, VisualizationNode to, int type)
   {
-    ctx.beginPath();
-    ctx.moveTo(from.x-10, from.y);
-    ctx.lineTo(to.x, to.y);
-    ctx.strokeStyle = getTypeColor(type);
-    ctx.stroke();
-
+    String color = "#000";
+    bool filled = false;
+    bool closed = false;
+    switch(type)
+    {
+    //use, extends, implements
+      case 1:
+        closed = true;
+        break;
+      case 2:
+        closed = true;
+        filled = true;
+        break;
+    }
+    drawArrow(from,to,closed,filled,color);
+  }
+  void drawArrow(VisualizationNode from, VisualizationNode to, bool filled, bool closed, String color)
+  {
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
     //arrow
     ctx.beginPath();
     int headlen = 10;   // length of head in pixels
     var angle = Math.atan2(to.y-from.y,to.x-from.x);
     ctx.moveTo(from.x, from.y);
     ctx.lineTo(to.x, to.y);
-    ctx.lineTo(to.x-headlen*Math.cos(angle-Math.PI/6),to.y-headlen*Math.sin(angle-Math.PI/6));
-    ctx.moveTo(to.x, to.y);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(to.x-headlen*Math.cos(angle-Math.PI/6),to.y-headlen*Math.sin(angle-Math.PI/6));
+    ctx.lineTo(to.x, to.y);
     ctx.lineTo(to.x-headlen*Math.cos(angle+Math.PI/6),to.y-headlen*Math.sin(angle+Math.PI/6));
+    if(filled)
+      ctx.fill();
+    if(closed)
+      ctx.closePath();
     ctx.stroke();
   }
-  void drawNode(int x, int y, String name)
+  void drawNode(int x, int y, String name, int radius)
   {
     ctx.moveTo(x,y);
-    int radius = 10;
-
     ctx.beginPath();
     ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
     ctx.fillStyle = '#ccc';
@@ -86,18 +113,22 @@ class GraphVisualizer
   }
   String getTypeColor(int type)
   {
+    String color = "#000";
+    bool filled = false;
+    bool closed = false;
     switch(type)
     {
+      //use, extends, implements
       case 0:
-        return "#000";
+
+      break;
       case 1:
-        return "#f00";
+        closed = true;
+        break;
       case 2:
-        return "#0f0";
-      case 3:
-        return "#00f";
-      default:
-        return "#333";
+        closed = true;
+        filled = true;
+        break;
     }
   }
 }

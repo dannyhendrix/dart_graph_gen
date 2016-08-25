@@ -1,6 +1,4 @@
-library classextractor;
-
-import "tokenizer.dart";
+part of parser;
 
 class ClassDefinition
 {
@@ -12,9 +10,10 @@ class ClassDefinition
   String toString() => "${token.token}${generic == null ? "" : "<$generic>"}${extendsClass == null ? "" : " extends $extendsClass"}${implementsClass == null ? "" : " implements $implementsClass"}";
 }
 
-//enum ClassExtractorState {ClassToken, ClassId, ExtendsToken, ExtendsId, ImplementsToken, ImplemetsId}
+/**
+ * Extract class definitions from tokens and build tree structure containing the class structure
+ */
 // class A<T extends B> extends B<T extends B> with C<T extends B>,D<T extends B> implements E<T extends B>, G<T extends B>
-enum ClassExtractorState {Start, AfterClassToken, AfterClassName, After, ImplementsToken, ImplemetsId}
 class ClassExtractor
 {
   List<ClassDefinition> extractClasses(List<Token> tokens)

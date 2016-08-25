@@ -1,7 +1,4 @@
-library tokenizer;
-
-import 'dart:async';
-import 'dart:io';
+part of parser;
 
 abstract class Token<T>
 {
